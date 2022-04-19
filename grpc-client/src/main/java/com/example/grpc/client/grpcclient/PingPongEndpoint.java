@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import io.grpc.Server;
@@ -41,7 +42,7 @@ public class PingPongEndpoint
 	// 	return grpcClientService.add();
 	//}
 	@PostMapping("/uploadandmultiply")
-	public String Mul(@RequestParam("matfile") MultipartFile matfile,@RequestParam("matfiletwo") MultipartFile matfiletwo,@RequestParam int deadline) throws IOException {
+	public String Mul(@RequestParam("matfile") MultipartFile matfile,@RequestParam("matfiletwo") MultipartFile matfiletwo,@RequestParam int deadline) throws IOException, InterruptedException, ExecutionException {
 		//convert into matrix
 		List <String> l = new ArrayList<>();
 		List <String> ltwo = new ArrayList<>();

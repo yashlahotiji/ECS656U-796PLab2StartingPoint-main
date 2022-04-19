@@ -104,6 +104,7 @@ public class GRPCClientService {
 		long stoptime = System.currentTimeMillis();
 		long footprint = stoptime - starttime; //timetaken for just 1 block of multiplication, so that we can find time reqd for entire operation
 		int serversneeded = (int) Math.ceil( (footprint*12)/deadline);
+		serversneeded = serversneeded > 8 ? 8 : serversneeded;
 
 		stubs[0] = stub1;
 		stubs[1] = stub2;
