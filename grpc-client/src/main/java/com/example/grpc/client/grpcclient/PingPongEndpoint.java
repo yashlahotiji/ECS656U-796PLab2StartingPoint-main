@@ -57,7 +57,7 @@ public class PingPongEndpoint
 		ltwo = bj.lines().collect(Collectors.toList());
 		int [][] mata = getMatrix(l);
 		int [][] matb = getMatrix(ltwo);
-		int [][] matc = grpcClientService.mult(mata,matb);
+		int [][] matc = grpcClientService.mult(mata,matb,deadline);
 		return Arrays.deepToString(matc);
 	}
 	

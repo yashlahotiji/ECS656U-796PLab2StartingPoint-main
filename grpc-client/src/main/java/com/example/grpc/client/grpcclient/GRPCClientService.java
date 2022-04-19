@@ -6,16 +6,24 @@ import com.example.grpc.server.grpcserver.PingPongServiceGrpc;
 import com.example.grpc.server.grpcserver.MatrixRequest;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.example.grpc.server.grpcserver.MatrixReply;
 import com.example.grpc.server.grpcserver.MatrixServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 @Service
 public class GRPCClientService {
+
+	@Autowired
+	matrixcal matcal;
+
     public String ping() {
         	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();        
 		PingPongServiceGrpc.PingPongServiceBlockingStub stub
@@ -26,9 +34,9 @@ public class GRPCClientService {
 		channel.shutdown();        
 		return helloResponse.getPong();
     }
-    
-
-	public int[][] mult(int[][] mata, int[][] matb) {
+    MatrixServiceGrpc.MatrixServiceBlockingStub[] stubs = new MatrixServiceGrpc.MatrixServiceBlockingStub[8];
+	int stubnum = 0;
+	public int[][] mult(int[][] mata, int[][] matb, int deadline) throws InterruptedException, ExecutionException {
 		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
 		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
 		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
@@ -83,30 +91,49 @@ public class GRPCClientService {
                 D2[i-bSize][j-bSize]=matb[i][j];
             }
         }
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub4 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub5 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub7 =MatrixServiceGrpc.newBlockingStub(channel);
-		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 =MatrixServiceGrpc.newBlockingStub(channel);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub1 =MatrixServiceGrpc.newBlockingStub(channel1);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub2 =MatrixServiceGrpc.newBlockingStub(channel2);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub3 =MatrixServiceGrpc.newBlockingStub(channel3);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub4 =MatrixServiceGrpc.newBlockingStub(channel4);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub5 =MatrixServiceGrpc.newBlockingStub(channel5);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub6 =MatrixServiceGrpc.newBlockingStub(channel6);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub7 =MatrixServiceGrpc.newBlockingStub(channel7);
+		MatrixServiceGrpc.MatrixServiceBlockingStub stub8 =MatrixServiceGrpc.newBlockingStub(channel8);
+		long starttime = System.currentTimeMillis(); 
 		String AP1 = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(A1)).setB(Arrays.deepToString(A2)).build()).getC();
-		String AP2 = stub2.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(B1)).setB(Arrays.deepToString(C2)).build()).getC();
-		String BP1 = stub3.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(A1)).setB(Arrays.deepToString(B2)).build()).getC();
-		String BP2 = stub4.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(B1)).setB(Arrays.deepToString(D2)).build()).getC();
-		String CP1 = stub5.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(C1)).setB(Arrays.deepToString(A2)).build()).getC();
-		String CP2 = stub6.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(D1)).setB(Arrays.deepToString(C2)).build()).getC();
-		String DP1 = stub7.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(C1)).setB(Arrays.deepToString(B2)).build()).getC();
-		String DP2 = stub8.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(D1)).setB(Arrays.deepToString(D2)).build()).getC();
-		String A3 = stub1.addBlock(MatrixRequest.newBuilder().setA(AP1).setB(AP2).build()).getC();
-		String B3 = stub2.addBlock(MatrixRequest.newBuilder().setA(BP1).setB(BP2).build()).getC();
-		String C3 = stub3.addBlock(MatrixRequest.newBuilder().setA(CP1).setB(CP2).build()).getC();
-		String D3 = stub4.addBlock(MatrixRequest.newBuilder().setA(DP1).setB(DP2).build()).getC();
-		A = stringToDeep(A3);
-		B = stringToDeep(B3);
-		C = stringToDeep(C3);
-		D = stringToDeep(D3);
+		long stoptime = System.currentTimeMillis();
+		long footprint = stoptime - starttime; //timetaken for just 1 block of multiplication, so that we can find time reqd for entire operation
+		int serversneeded = (int) Math.ceil( (footprint*12)/deadline);
+
+		stubs[0] = stub1;
+		stubs[1] = stub2;
+		stubs[2] = stub3;
+		stubs[3] = stub4;
+		stubs[4] = stub5;
+		stubs[5] = stub6;
+		stubs[6] = stub7;
+		stubs[7] = stub8;
+		int a= 0;
+		//APART1
+		//String AP1 = stub1.multiplyBlock(MatrixRequest.newBuilder().setA(Arrays.deepToString(A1)).setB(Arrays.deepToString(A2)).build()).getC();
+		CompletableFuture<String> AmatP1 = matcal.matrixCalc(Arrays.deepToString(A1), Arrays.deepToString(A2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> AmatP2 = matcal.matrixCalc(Arrays.deepToString(B1), Arrays.deepToString(C2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> BmatP1 = matcal.matrixCalc(Arrays.deepToString(A1), Arrays.deepToString(B2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> BmatP2 = matcal.matrixCalc(Arrays.deepToString(B1), Arrays.deepToString(D2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> CmatP1 = matcal.matrixCalc(Arrays.deepToString(C1), Arrays.deepToString(A2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> CmatP2 = matcal.matrixCalc(Arrays.deepToString(D1), Arrays.deepToString(C2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> DmatP1 = matcal.matrixCalc(Arrays.deepToString(C1), Arrays.deepToString(B2), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> DmatP2 = matcal.matrixCalc(Arrays.deepToString(D1), Arrays.deepToString(D2), stubs[a<serversneeded ? a++ : 0]);
+		
+		CompletableFuture<String> A3 = matcal.matrixAdd(AmatP1.get(), AmatP2.get(), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> B3 = matcal.matrixAdd(BmatP1.get(), BmatP2.get(), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> C3 = matcal.matrixAdd(CmatP1.get(), CmatP2.get(), stubs[a<serversneeded ? a++ : 0]);
+		CompletableFuture<String> D3 = matcal.matrixAdd(DmatP1.get(), DmatP2.get(), stubs[a<serversneeded ? a++ : 0]);
+
+		A = stringToDeep(A3.get());
+		B = stringToDeep(B3.get());
+		C = stringToDeep(C3.get());
+		D = stringToDeep(D3.get());
 		int[][] res = new int[MAX][MAX];
 		for (int i = 0; i < bSize; i++) 
         { 
@@ -144,7 +171,14 @@ public class GRPCClientService {
     		}
     		System.out.println("");
     	}
-		channel.shutdown();
+		channel1.shutdown();
+		channel2.shutdown();
+		channel3.shutdown();
+		channel4.shutdown();
+		channel5.shutdown();
+		channel6.shutdown();
+		channel7.shutdown();
+		channel8.shutdown();
     	return res;
 		//int[][] matrc = stringToDeep(res);
 	
