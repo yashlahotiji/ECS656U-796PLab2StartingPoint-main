@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GRPCClientService {
     public String ping() {
-        	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
-                .usePlaintext()
-                .build();        
+        	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();        
 		PingPongServiceGrpc.PingPongServiceBlockingStub stub
                 = PingPongServiceGrpc.newBlockingStub(channel);        
 		PongResponse helloResponse = stub.ping(PingRequest.newBuilder()
@@ -31,8 +29,14 @@ public class GRPCClientService {
     
 
 	public int[][] mult(int[][] mata, int[][] matb) {
-		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
-		
+		ManagedChannel channel1 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel2 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel3 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel4 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel5 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel6 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel7 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+		ManagedChannel channel8 = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
 		int MAX = mata.length;
 		int bSize = MAX/2;
 		int[][] A = new int[bSize][bSize];
