@@ -13,85 +13,71 @@ public class MatrixServiceImpl extends MatrixServiceGrpc.MatrixServiceImplBase
 	@Override
 	public void addBlock(MatrixRequest request, StreamObserver<MatrixReply> reply)
 	{
-		// System.out.println("Request received from client:\n" + request);
-		// int C00=request.getA00()+request.getB00();
-    	// 	int C01=request.getA01()+request.getB01();
-		// int C10=request.getA10()+request.getB10();
-		// int C11=request.getA11()+request.getB11();
-		// MatrixReply response = MatrixReply.newBuilder().setC00(C00).setC01(C01).setC10(C10).setC11(C11).build();
-		// reply.onNext(response);
-		// reply.onCompleted();
+
 		String a = request.getA();
 		String b = request.getB();
-		int[][] matra = stringToDeep(a);
-		int[][] matrb = stringToDeep(b);
-		int[][] matrc = new int[matra.length][matra[0].length];
+		int[][] matrixfirst = stringToDeep(a);
+		int[][] matrixsecond = stringToDeep(b);
+		int[][] matrixthird = new int[matrixfirst.length][matrixfirst[0].length];
 		int i,j;
-		for(i=0;i<matra.length;i++){
-			for(j=0;j<matrb.length;j++){
-					matrc[i][j] = matra[i][j]+matrb[i][j];
+		for(i=0;i<matrixfirst.length;i++){
+			for(j=0;j<matrixsecond.length;j++){
+					matrixthird[i][j] = matrixfirst[i][j]+matrixsecond[i][j];
 			}
 		}
-		MatrixReply response = MatrixReply.newBuilder().setC(Arrays.deepToString(matrc)).build();
+		MatrixReply response = MatrixReply.newBuilder().setC(Arrays.deepToString(matrixthird)).build();
 		reply.onNext(response);
 		reply.onCompleted();
     }
 	@Override
     	public void multiplyBlock(MatrixRequest request, StreamObserver<MatrixReply> reply)
     	{
-        // 	System.out.println("Request received from client:\n" + request);
-        // 	int C00=request.getA00()*request.getB00()+request.getA01()*request.getB10();
-		// int C01=request.getA00()*request.getB01()+request.getA01()*request.getB11();
-		// int C10=request.getA10()*request.getB00()+request.getA11()*request.getB10();
-		// int C11=request.getA10()*request.getB01()+request.getA11()*request.getB11();
-        // MatrixReply response = MatrixReply.newBuilder().setC00(C00).setC01(C01).setC10(C10).setC11(C11).build();
-        // reply.onNext(response);
-        // reply.onCompleted();
+
 		String a = request.getA();
 		String b = request.getB();
-		int[][] matra = stringToDeep(a);
-		int[][] matrb = stringToDeep(b);
-		int[][] matrc = new int[matra.length][matra[0].length];
-		int i,j,k;
-		for(i=0;i<matra.length;i++){
-			for(j=0;j<matrb.length;j++){
-				for(k=0;k<matrb.length;k++){
-					matrc[i][j]+= matra[i][k]*matrb[k][j];
+		int[][] matrixfirst = stringToDeep(a);
+		int[][] matrixsecond = stringToDeep(b);
+		int[][] matrixthird = new int[matrixfirst.length][matrixfirst[0].length];
+		int p,q,r;
+		for(p=0;p<matrixfirst.length;p++){
+			for(q=0;q<matrixsecond.length;q++){
+				for(r=0;r<matrixsecond.length;r++){
+					matrixthird[p][q]+= matrixfirst[p][r]*matrixsecond[r][q];
 				}
 			}
 		}
-		MatrixReply response = MatrixReply.newBuilder().setC(Arrays.deepToString(matrc)).build();
+		MatrixReply response = MatrixReply.newBuilder().setC(Arrays.deepToString(matrixthird)).build();
 		reply.onNext(response);
 		reply.onCompleted();
     }
-	//String to Matrix
-	private static int[][] stringToDeep(String str) {
+
+	private static int[][] stringToDeep(String s) {
 		int row = 0;
-		int col = 0;
-		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == '[') {
+		int column = 0;
+		for (int p = 0; p < s.length(); p++) {
+			if (s.charAt(p) == '[') {
 				row++;
 			}
 		}
 		row--;
-		for (int i = 0;; i++) {
-			if (str.charAt(i) == ',') {
-				col++;
+		for (int p = 0;; p++) {
+			if (s.charAt(p) == ',') {
+				column++;
 			}
-			if (str.charAt(i) == ']') {
+			if (s.charAt(p) == ']') {
 				break;
 			}
 		}
-		col++;
-		int[][] out = new int[row][col];
-		str = str.replaceAll("\\[", "").replaceAll("\\]", "");
-		String[] s1 = str.split(", ");
+		column++;
+		int[][] out = new int[row][column];
+		s = s.replaceAll("\\[", "").replaceAll("\\]", "");
+		String[] string1 = s.split(", ");
 		int j = -1;
-		for (int i = 0; i < s1.length; i++) {
-			if (i % col == 0) {
+		for (int i = 0; i < string1.length; i++) {
+			if (i % column == 0) {
 				j++;
 			}
-			out[j][i % col] = Integer.parseInt(s1[i]);
+			out[j][i % column] = Integer.parseInt(string1[i]);
 		}
 		return out;
 	}

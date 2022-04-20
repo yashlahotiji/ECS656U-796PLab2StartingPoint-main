@@ -41,37 +41,37 @@ public class PingPongEndpoint
 	// public String add() {
 	// 	return grpcClientService.add();
 	//}
-	@PostMapping("/uploadandmultiply")
-	public String Mul(@RequestParam("matfile") MultipartFile matfile,@RequestParam("matfiletwo") MultipartFile matfiletwo,@RequestParam int deadline) throws IOException, InterruptedException, ExecutionException {
+	@PostMapping("/upmul")
+	public String Mul(@RequestParam("fileone") MultipartFile matfile,@RequestParam("filetwo") MultipartFile matfiletwo,@RequestParam int deadline) throws IOException, InterruptedException, ExecutionException {
 		//convert into matrix
-		List <String> l = new ArrayList<>();
-		List <String> ltwo = new ArrayList<>();
+		List <String> listone = new ArrayList<>();
+		List <String> listtwo = new ArrayList<>();
 		//InputStreamReader ir = new InputStreamReader(System.in);
 		//For Matrix 1
-		InputStream is = matfile.getInputStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		InputStream isr1 = matfile.getInputStream();
+		BufferedReader br1 = new BufferedReader(new InputStreamReader(isr1));
 		//For Matrix 2
-		InputStream ij = matfiletwo.getInputStream();
-		BufferedReader bj = new BufferedReader(new InputStreamReader(ij));
+		InputStream isr2 = matfiletwo.getInputStream();
+		BufferedReader br2 = new BufferedReader(new InputStreamReader(isr2));
 
-		l = br.lines().collect(Collectors.toList());
-		ltwo = bj.lines().collect(Collectors.toList());
-		int [][] mata = getMatrix(l);
-		int [][] matb = getMatrix(ltwo);
-		int [][] matc = grpcClientService.mult(mata,matb,deadline);
-		return Arrays.deepToString(matc);
+		listone = br1.lines().collect(Collectors.toList());
+		listtwo = br2.lines().collect(Collectors.toList());
+		int [][] matrixone = getMatrix(listone);
+		int [][] matrixtwo = getMatrix(listtwo);
+		int [][] finalmat = grpcClientService.mult(matrixone,matrixtwo,deadline);
+		return Arrays.deepToString(finalmat);
 	}
 	
 	//created a matrix
-	public int[][] getMatrix(List<String> l) {
-		int row = l.size();
-		int col = l.get(0).split( " ").length;
-		int [][] mat = new int [row][col];
-		int i,j;
-		for(i=0;i<row;i++){
-			String arr[]=l.get(i).split(" ");
-			for(j=0;j<col;j++){
-				mat [i][j] = Integer.parseInt(arr[j]);
+	public int[][] getMatrix(List<String> listone) {
+		int row = listone.size();
+		int column = listone.get(0).split( " ").length;
+		int [][] mat = new int [row][column];
+		int p,q;
+		for(p=0;p<row;p++){
+			String arr[]=listone.get(p).split(" ");
+			for(q=0;q<column;q++){
+				mat [p][q] = Integer.parseInt(arr[q]);
 			}
 		}
 		return mat;

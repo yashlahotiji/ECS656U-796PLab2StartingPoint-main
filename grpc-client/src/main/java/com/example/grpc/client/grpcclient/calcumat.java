@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class matrixcal {
+public class calcumat {
 
     @Async("executor")
     public CompletableFuture<String> matrixCalc(String matrix, String matrixB, MatrixServiceGrpc.MatrixServiceBlockingStub stub)

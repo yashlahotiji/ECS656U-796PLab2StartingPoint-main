@@ -16,12 +16,12 @@ public class GrpcClientApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GrpcClientApplication.class, args);
-		/*ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
+		/*ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", 9090)
 				.usePlaintext()
 				.build();
 
 		HelloServiceGrpc.HelloServiceBlockingStub stub
-				= HelloServiceGrpc.newBlockingStub(channel);
+				= HelloServiceGrpc.newBlockingStub(ch);
 
 		HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
 				.setFirstName("Baeldung")
@@ -30,21 +30,21 @@ public class GrpcClientApplication extends SpringBootServletInitializer {
 
 		System.out.println(helloResponse);
 
-		channel.shutdown();*/
+		ch.shutdown();*/
 
-		/*ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080)
+		/*ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", 8080)
 				.usePlaintext()
 				.build();
 
 		HelloServiceGrpc.HelloServiceBlockingStub stub
-				= HelloServiceGrpc.newBlockingStub(channel);
+				= HelloServiceGrpc.newBlockingStub(ch);
 
 		HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
 				.setFirstName("Baeldung")
 				.setLastName("gRPC")
 				.build());
 
-		channel.shutdown();*/
+		ch.shutdown();*/
 //		SpringApplication.run(GrpcClientApplication.class, args);
 	}
 
